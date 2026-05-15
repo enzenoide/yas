@@ -1,24 +1,13 @@
-#include <string>
+#include "../include/lexer.h"
 #include <cctype>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
+#include <string>
 
-enum Token {
-    tok_eof = -1,
-    tok_void = -2,
-    tok_identifier = -3,
-    tok_number = -4,
-    tok_rep = -5,
-    tok_vetor = -6,
-    tok_ler = -7,
-    tok_return = -8,
-    tok_def = -9,
-};
+std::string identifierStr;
+long long num;
 
-static std::string identifierStr;
-static long long num;
-
-static int gettok() {
+int gettok() {
     static int LastChar = ' ';
 
     while (isspace(LastChar))
@@ -26,7 +15,6 @@ static int gettok() {
 
     if (isalpha(LastChar)) {
         identifierStr = LastChar;
-
         while (isalnum((LastChar = getchar())))
             identifierStr += LastChar;
 
@@ -61,14 +49,12 @@ static int gettok() {
             LastChar = getchar();
         } while (LastChar != EOF && LastChar != '\n' && LastChar != '\r');
 
-        if (LastChar != EOF) {
+        if (LastChar != EOF)
             return gettok();
-        }
     }
 
-    if (LastChar == EOF) {
+    if (LastChar == EOF)
         return tok_eof;
-    }
 
     int ThisChar = LastChar;
     LastChar = getchar();

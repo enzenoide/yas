@@ -52,9 +52,17 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
     std::string IdName = identifierStr;
     getNextToken();
 
-    if (CurTok != '(')
+    if (CurTok != '('){
+      if(CurTok == '='){
+        getNextToken();
+        auto Expression = ParseExpression();
+        if(!Expression)
+          return nullptr;
+        return std::make_unique<AssignmentExprAST>(IdName,std::move(Expression));
+      }
         return std::make_unique<VariableExprAST>(IdName);
 
+    }
     getNextToken();
     std::vector<std::unique_ptr<ExprAST>> Args;
     if (CurTok != ')') {
@@ -93,43 +101,44 @@ std::unique_ptr<ExprAST> ParseReadExpr() {
 
 std::unique_ptr<ExprAST> ParseRepExpr() {
     getNextToken();
-    std::vector<std::unique_ptr<ExprAST>> Args;
+    
+    auto Count = ParseExpression();
+    if(!Count)
+      return nullptr;
 
-    if (auto Count = ParseExpression()) {
-        Args.push_back(std::move(Count));
-        return std::make_unique<CallExprAST>("rep", std::move(Args));
-    }
+    auto Body = ParseBlock();
+    if(!Body)
+      return nullptr;
 
-    return nullptr;
+    return std::make_unique<RepExprAST>(std::move(Count),std::move(Body));
 }
 
 std::unique_ptr<ExprAST> ParseVectorExpr() {
-    getNextToken();
-    std::vector<std::unique_ptr<ExprAST>> Args;
+   getNextToken();
+   std::vector<std::unique_ptr<ExprAST>> Args;
 
-    if (CurTok == '(') {
-        getNextToken();
-        if (CurTok != ')') {
-            while (true) {
-                if (auto Arg = ParseExpression())
-                    Args.push_back(std::move(Arg));
-                else
-                    return nullptr;
+   if(CurTok != '[')
+     return LogError("Expected '[' in vector declaration.");
+   getNextToken();
+   if(CurTok == ']')
+     return LogError("Expected the vector to have content.");
+   while(true){
+     if(auto Expression = ParseExpression()){
+       Args.push_back(std::move(Expression));
+     }
+     else {
+      return nullptr;
+     }
+     if(CurTok == ']')
+       break;
+     if(CurTok != ',')
+       return LogError("Expected ',' between the content list.");
+     getNextToken();
 
-                if (CurTok == ')')
-                    break;
-
-                if (CurTok != ',')
-                    return LogError("Expected ')' or ',' in vector list");
-                getNextToken();
-            }
-        }
-        getNextToken();
-    }
-
-    return std::make_unique<CallExprAST>("vetor", std::move(Args));
+   }
+   getNextToken();
+   return std::make_unique<VectorExprAST>(std::move(Args));
 }
-
 static std::unique_ptr<ExprAST> ParsePrimary() {
     switch (CurTok) {
     default:
@@ -144,6 +153,8 @@ static std::unique_ptr<ExprAST> ParsePrimary() {
         return ParseVectorExpr();
     case tok_ler:
         return ParseReadExpr();
+    case tok_esc:
+        return ParseEsc();
     case '(':
         return ParseParenExpr();
     }
@@ -255,6 +266,9 @@ std::unique_ptr<FunctionAST> ParseFunctionDefinition() {
     if (CurTok != tok_void && CurTok != tok_def)
         return nullptr;
 
+    // Guarda se é void ou def
+    std::string RetType = (CurTok == tok_void) ? "void" : "long long";
+    
     getNextToken();
     if (CurTok != tok_identifier)
         return nullptr;
@@ -285,14 +299,41 @@ std::unique_ptr<FunctionAST> ParseFunctionDefinition() {
     if (!Body)
         return nullptr;
 
-    auto Proto = std::make_unique<PrototypeAST>(FnName, std::move(Args));
+    // Passa o RetType aqui
+    auto Proto = std::make_unique<PrototypeAST>(FnName, std::move(Args), RetType);
     return std::make_unique<FunctionAST>(std::move(Proto), std::move(Body));
 }
+std::unique_ptr<ExprAST> ParseEsc() {
+    getNextToken();
 
-std::unique_ptr<ExprAST> ParseTopLevel() {
-    if (CurTok == tok_void || CurTok == tok_def)
-        return ParseFunctionDefinition();
-    if (CurTok == '{')
-        return ParseBlock();
-    return ParseExpression();
+    if (CurTok != '(')
+        return LogError("Expected '(' in esc function");
+    
+    getNextToken();
+
+    std::vector<std::unique_ptr<ExprAST>> Args;
+
+    if (CurTok != ')') {
+        while (true) {
+            if (auto Arg = ParseExpression()) {
+                Args.push_back(std::move(Arg));
+            } else {
+                return nullptr;
+            }
+
+            if (CurTok == ')') {
+                break;
+            }
+
+            if (CurTok != ',') {
+                return LogError("Expected ')' or ',' in esc funtion args");
+            }
+            
+            getNextToken();
+        }
+    }
+
+    getNextToken();
+    
+    return std::make_unique<EscExprAST>(std::move(Args));
 }

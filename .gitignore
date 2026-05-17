@@ -1,0 +1,21 @@
+# Build directory
+/build/
+
+# Generated binaries
+/yas
+/programa
+
+# Generated C++ output
+/saida.cpp
+
+# Object files
+*.o
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# VS Code workspace settings
+.vscode/

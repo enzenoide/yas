@@ -118,7 +118,7 @@ std::unique_ptr<ExprAST> ParseVectorExpr() {
    std::vector<std::unique_ptr<ExprAST>> Args;
 
    if(CurTok != '[')
-     return LogError("Expected '[' in vector declaration.");
+     return LogError("Expected '[' in vector declarations.");
    getNextToken();
    if(CurTok == ']')
      return LogError("Expected the vector to have content.");

@@ -77,4 +77,26 @@ A ausência de uma linguagem que combine a simplicidade de escrita com a alta pe
 
 ## Diagrama de diretórios
 
-![Diagrama de diretórios](image.png)
+- 📂 yas
+  - � CMakeLists.txt
+  - 📄 README.md
+  - 📄 image.png
+  - 📂 include
+    - 📄 ast.h
+    - 📄 lexer.h
+    - 📄 parser.h
+    - 📄 transpiler.h
+  - 📂 src
+    - 📄 ast.cpp
+    - 📄 lexer.cpp
+    - 📄 main.cpp
+    - 📄 parser.cpp
+    - 📄 transpiler.cpp
+  - 📂 tests
+    - 📄 arithmetic.yas
+    - 📄 control_flow.yas
+    - 📄 error.yas
+    - 📄 functions.yas
+    - 📄 hello.yas
+    - 📄 programa
+    - 📄 run_tests.sh

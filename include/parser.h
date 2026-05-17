@@ -16,7 +16,6 @@ int getNextToken();
 int getTokPrecedence();
 
 std::unique_ptr<ExprAST> ParseExpression();
-std::unique_ptr<ExprAST> ParseTopLevel();
 std::unique_ptr<PrototypeAST> ParsePrototype();
 std::unique_ptr<ExprAST> ParseBlock();
 std::unique_ptr<ExprAST> ParseReturn();
@@ -24,6 +23,7 @@ std::unique_ptr<ExprAST> ParseReadExpr();
 std::unique_ptr<ExprAST> ParseRepExpr();
 std::unique_ptr<ExprAST> ParseVectorExpr();
 std::unique_ptr<FunctionAST> ParseFunctionDefinition();
+std::unique_ptr<ExprAST> ParseEsc();
 
 std::unique_ptr<ExprAST> LogError(const char *Str);
 std::unique_ptr<PrototypeAST> LogErrorP(const char *Str);

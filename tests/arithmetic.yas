@@ -1,0 +1,8 @@
+# Teste de operações aritméticas
+def main() {
+	a = 1 + 2 * 3;
+	esc(a);
+
+	b = (1 + 2) * 3;
+	esc(b);
+}

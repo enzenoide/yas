@@ -24,6 +24,8 @@ static void MainLoop() {
             getNextToken();
             break;
         case tok_def:
+            HandleDefinition();
+            break;
         case tok_void:
             HandleDefinition();
             break;

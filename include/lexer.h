@@ -13,6 +13,7 @@ enum Token {
     tok_ler = -7,
     tok_return = -8,
     tok_def = -9,
+    tok_esc = -10,
 };
 
 extern std::string identifierStr;

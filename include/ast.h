@@ -9,13 +9,17 @@
 class ExprAST {
 public:
     virtual ~ExprAST() = default;
+
+    
+    virtual std::string transpilar() = 0;
 };
 
 class NumberExprAST : public ExprAST {
-    double val;
+    long long val;
 
 public:
-    explicit NumberExprAST(double Val) : val(Val) {}
+    explicit NumberExprAST(long long Val) : val(Val) {}
+    std::string transpilar() override;
 };
 
 class VariableExprAST : public ExprAST {
@@ -25,6 +29,8 @@ class VariableExprAST : public ExprAST {
 public:
     VariableExprAST(const std::string &name, const std::string &type = "long long")
         : name(name), type(type) {}
+        
+    std::string transpilar() override;
 };
 
 class BinaryExprAST : public ExprAST {
@@ -35,6 +41,8 @@ public:
     BinaryExprAST(char Op, std::unique_ptr<ExprAST> LHS,
                   std::unique_ptr<ExprAST> RHS)
         : Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
+        
+    std::string transpilar() override; 
 };
 
 class CallExprAST : public ExprAST {
@@ -45,6 +53,8 @@ public:
     CallExprAST(const std::string &Callee,
                 std::vector<std::unique_ptr<ExprAST>> Args)
         : Callee(Callee), Args(std::move(Args)) {}
+        
+    std::string transpilar() override;
 };
 
 class PrototypeAST {
@@ -59,8 +69,17 @@ public:
         : Name(Name), ReturnType(ReturnType), Args(std::move(Args)) {}
 
     const std::string &getName() const { return Name; }
+    
+    
+    std::string transpilar(); 
 };
+class EscExprAST : public ExprAST{
+  std::vector<std::unique_ptr<ExprAST>> Args;
 
+  public:
+    explicit EscExprAST(std::vector<std::unique_ptr<ExprAST>> Args) : Args(std::move(Args)){}
+    std::string transpilar() override;
+};
 class FunctionAST : public ExprAST {
     std::unique_ptr<PrototypeAST> Proto;
     std::unique_ptr<ExprAST> Body;
@@ -69,6 +88,8 @@ public:
     FunctionAST(std::unique_ptr<PrototypeAST> Proto,
                 std::unique_ptr<ExprAST> Body)
         : Proto(std::move(Proto)), Body(std::move(Body)) {}
+        
+    std::string transpilar() override;
 };
 
 class BlockExprAST : public ExprAST {
@@ -77,6 +98,8 @@ class BlockExprAST : public ExprAST {
 public:
     explicit BlockExprAST(std::vector<std::unique_ptr<ExprAST>> Block)
         : Block(std::move(Block)) {}
+        
+    std::string transpilar() override;
 };
 
 class ReturnExprAST : public ExprAST {
@@ -85,6 +108,8 @@ class ReturnExprAST : public ExprAST {
 public:
     explicit ReturnExprAST(std::unique_ptr<ExprAST> Expr)
         : Expr(std::move(Expr)) {}
+        
+    std::string transpilar() override;
 };
 
 class LerExprAST : public ExprAST {
@@ -93,6 +118,40 @@ class LerExprAST : public ExprAST {
 public:
     explicit LerExprAST(std::vector<std::unique_ptr<VariableExprAST>> Vars)
         : Vars(std::move(Vars)) {}
+        
+    std::string transpilar() override;
+};
+
+class AssignmentExprAST : public ExprAST {
+  std::string variable;
+  std::unique_ptr<ExprAST> val;
+
+  public:
+    explicit AssignmentExprAST(std::string variable, std::unique_ptr<ExprAST> val) 
+        : variable(variable), val(std::move(val)) {}
+        
+    std::string transpilar() override;
+};
+
+class RepExprAST : public ExprAST {
+  std::unique_ptr<ExprAST> Count;
+  std::unique_ptr<ExprAST> Body;
+
+  public:
+    explicit RepExprAST(std::unique_ptr<ExprAST> Count, std::unique_ptr<ExprAST> Body) 
+        : Count(std::move(Count)), Body(std::move(Body)) {}
+        
+    std::string transpilar() override;
+};
+
+class VectorExprAST : public ExprAST {
+  std::vector<std::unique_ptr<ExprAST>> Args;
+
+  public:
+    explicit VectorExprAST(std::vector<std::unique_ptr<ExprAST>> Args) 
+        : Args(std::move(Args)) {}
+        
+    std::string transpilar() override;
 };
 
 #endif // YAS_AST_H

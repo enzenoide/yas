@@ -30,6 +30,8 @@ int gettok() {
             return tok_return;
         if (identifierStr == "def")
             return tok_def;
+        if (identifierStr == "esc")
+            return tok_esc;
         return tok_identifier;
     }
 

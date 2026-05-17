@@ -1,0 +1,4 @@
+# Arquivo intencionalmente com erro de sintaxe
+def erro_sem_parenteses {
+	return 1;
+}

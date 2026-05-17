@@ -1,0 +1,8 @@
+# Teste de fluxo de controle (usa `rep` como laço)
+def main() {
+  a = 0;
+  rep 3 {
+    a = a + 1;
+    esc(a);
+  }
+}

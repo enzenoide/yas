@@ -80,7 +80,6 @@ A ausência de uma linguagem que combine a simplicidade de escrita com a alta pe
 - 📂 yas
   - � CMakeLists.txt
   - 📄 README.md
-  - 📄 image.png
   - 📂 include
     - 📄 ast.h
     - 📄 lexer.h
